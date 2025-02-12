@@ -1,6 +1,5 @@
 ---
 source: resym_core/tests/type_reconstruction.rs
-assertion_line: 184
 expression: reconstructed_type
 ---
 enum resym_test::EnumTest2 : unsigned char {

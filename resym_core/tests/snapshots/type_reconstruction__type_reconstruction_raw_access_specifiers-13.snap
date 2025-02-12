@@ -6,9 +6,9 @@ class resym_test::InterfaceImplClass : public resym_test::PureVirtualClass { /* 
   /* 0x0000: fields for resym_test::PureVirtualClass */
   
   private: virtual int InterfaceVirtual();
-  public: InterfaceImplClass(resym_test::InterfaceImplClass&);
+  public: InterfaceImplClass(resym_test::InterfaceImplClass&&);
   public: InterfaceImplClass(const resym_test::InterfaceImplClass&);
   public: InterfaceImplClass();
-  public: resym_test::InterfaceImplClass& operator=(resym_test::InterfaceImplClass&);
+  public: resym_test::InterfaceImplClass& operator=(resym_test::InterfaceImplClass&&);
   public: resym_test::InterfaceImplClass& operator=(const resym_test::InterfaceImplClass&);
 };

@@ -6,9 +6,9 @@ class resym_test::PureVirtualClassSpecialized : public resym_test::PureVirtualCl
   /* 0x0000: fields for resym_test::PureVirtualClass */
   
   private: int OtherMethod();
-  public: PureVirtualClassSpecialized(resym_test::PureVirtualClassSpecialized&);
+  public: PureVirtualClassSpecialized(resym_test::PureVirtualClassSpecialized&&);
   public: PureVirtualClassSpecialized(const resym_test::PureVirtualClassSpecialized&);
   public: PureVirtualClassSpecialized();
-  public: resym_test::PureVirtualClassSpecialized& operator=(resym_test::PureVirtualClassSpecialized&);
+  public: resym_test::PureVirtualClassSpecialized& operator=(resym_test::PureVirtualClassSpecialized&&);
   public: resym_test::PureVirtualClassSpecialized& operator=(const resym_test::PureVirtualClassSpecialized&);
 };

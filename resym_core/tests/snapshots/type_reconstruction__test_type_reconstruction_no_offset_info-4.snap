@@ -1,6 +1,5 @@
 ---
 source: resym_core/tests/type_reconstruction.rs
-assertion_line: 184
 expression: reconstructed_type
 ---
 union resym_test::UnionTest { /* Size=0x8 */

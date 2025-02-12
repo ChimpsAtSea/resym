@@ -3,7 +3,7 @@ source: resym_core/tests/module_dumping.rs
 expression: module_dump
 ---
 using namespace std;
-using PUWSTR_C = const WCHAR*;
+using PUWSTR_C = const __unaligned WCHAR*;
 using TP_CALLBACK_ENVIRON_V3 = _TP_CALLBACK_ENVIRON_V3;
 PULONGLONG (__local_stdio_scanf_options)(); // RVA=0x14670 CodeSize=0x8
 static ULONGLONG _OptionsStorage; // RVA=0x1eb28 

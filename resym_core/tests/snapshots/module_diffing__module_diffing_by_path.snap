@@ -18,7 +18,7 @@ expression: module_diff.data
  static int32_t (* pre_c_initializer)(); // RVA=0x19440 
  static int32_t (* post_pgo_initializer)(); // RVA=0x19550 
  static void (* pre_cpp_initializer)(); // RVA=0x19110 
- using PUWSTR_C = const wchar_t*;
+ using PUWSTR_C = const __unaligned wchar_t*;
  using TP_CALLBACK_ENVIRON_V3 = _TP_CALLBACK_ENVIRON_V3;
  static int32_t (__scrt_common_main)(); // RVA=0x11e80 CodeSize=0x13
  static int32_t (__scrt_common_main_seh)(); // RVA=0x11ea0 CodeSize=0x19e

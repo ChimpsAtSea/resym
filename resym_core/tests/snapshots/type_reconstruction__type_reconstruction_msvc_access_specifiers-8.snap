@@ -1,6 +1,5 @@
 ---
 source: resym_core/tests/type_reconstruction.rs
-assertion_line: 103
 expression: reconstructed_type
 ---
 struct resym_test::StructUnnamedUdtTest1 { /* Size=0xa0 */

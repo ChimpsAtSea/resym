@@ -8,7 +8,7 @@ use super::{
     resolve_complete_type_index, type_bitfield_info, type_name, type_size,
     union::Union,
     AccessSpecifierReconstructionFlavor, DataFormatConfiguration, Field, Method, NeededTypeSet,
-    ReconstructibleTypeData, Result, ResymCoreError, TypeForwarder,
+    ReconstructibleTypeData, Result, ResymCoreError, SizePrintFlavor, TypeForwarder,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -453,7 +453,7 @@ impl ReconstructibleTypeData for Class<'_> {
             } else {
                 " "
             },
-            if fmt_configuration.print_size_info {
+            if fmt_configuration.size_print_flavor == SizePrintFlavor::Comment {
                 format!(" /* Size={:#x} */", self.size)
             } else {
                 String::default()
@@ -605,6 +605,21 @@ impl ReconstructibleTypeData for Class<'_> {
         }
 
         writeln!(f, "}};")?;
+        if fmt_configuration.size_print_flavor == SizePrintFlavor::StaticAssert {
+            if fmt_configuration.integers_as_hexadecimal {
+                writeln!(
+                    f,
+                    "static_assert(sizeof({}) == {:#x}); // {}",
+                    self.name, self.size, self.size
+                )?;
+            } else {
+                writeln!(
+                    f,
+                    "static_assert(sizeof({}) == {}); // {:#x}",
+                    self.name, self.size, self.size
+                )?;
+            }
+        }
 
         Ok(())
     }

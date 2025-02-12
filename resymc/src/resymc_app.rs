@@ -6,6 +6,7 @@ use resym_core::{
     frontend::FrontendCommand,
     pdb_types::AccessSpecifierReconstructionFlavor,
     pdb_types::PrimitiveReconstructionFlavor,
+    pdb_types::SizePrintFlavor,
     syntax_highlighting::CodeTheme,
 };
 
@@ -96,10 +97,10 @@ impl ResymcApp {
         type_name: Option<String>,
         primitive_types_flavor: PrimitiveReconstructionFlavor,
         print_access_specifiers: AccessSpecifierReconstructionFlavor,
+        size_print_flavor: SizePrintFlavor,
         print_header: bool,
         print_dependencies: bool,
         integers_as_hexadecimal: bool,
-        print_size_info: bool,
         print_offset_info: bool,
         print_brackets_new_line: bool,
         ignore_std_types: bool,
@@ -126,10 +127,10 @@ impl ResymcApp {
                     type_name,
                     primitive_types_flavor,
                     print_access_specifiers,
+                    size_print_flavor,
                     print_header,
                     print_dependencies,
                     integers_as_hexadecimal,
-                    print_size_info,
                     print_offset_info,
                     print_brackets_new_line,
                     ignore_std_types,
@@ -140,9 +141,9 @@ impl ResymcApp {
                     PDB_MAIN_SLOT,
                     primitive_types_flavor,
                     print_access_specifiers,
+                    size_print_flavor,
                     print_header,
                     integers_as_hexadecimal,
-                    print_size_info,
                     print_offset_info,
                     print_brackets_new_line,
                     ignore_std_types,
@@ -182,10 +183,10 @@ impl ResymcApp {
         type_name: String,
         primitive_types_flavor: PrimitiveReconstructionFlavor,
         print_access_specifiers: AccessSpecifierReconstructionFlavor,
+        size_print_flavor: SizePrintFlavor,
         print_header: bool,
         print_dependencies: bool,
         integers_as_hexadecimal: bool,
-        print_size_info: bool,
         print_offset_info: bool,
         print_brackets_new_line: bool,
         ignore_std_types: bool,
@@ -235,10 +236,10 @@ impl ResymcApp {
             type_name,
             primitive_types_flavor,
             print_access_specifiers,
+            size_print_flavor,
             print_header,
             print_dependencies,
             integers_as_hexadecimal,
-            print_size_info,
             print_offset_info,
             print_brackets_new_line,
             ignore_std_types,
@@ -799,10 +800,10 @@ mod tests {
                 None,
                 PrimitiveReconstructionFlavor::Microsoft,
                 AccessSpecifierReconstructionFlavor::Disabled,
+                SizePrintFlavor::Comment,
                 false, // print_header
                 false, // print_dependencies
                 false, // integers_as_hexadecimal
-                true,  // print_size_info
                 true,  // print_offset_info
                 false, // print_brackets_new_line
                 false, // ignore_std_types
@@ -824,10 +825,10 @@ mod tests {
                 None,
                 PrimitiveReconstructionFlavor::Microsoft,
                 AccessSpecifierReconstructionFlavor::Always,
+                SizePrintFlavor::Comment,
                 true,  // print_header
                 true,  // print_dependencies
                 true,  // integers_as_hexadecimal
-                true,  // print_size_info
                 true,  // print_offset_info
                 false, // print_brackets_new_line
                 true,  // ignore_std_types
@@ -852,10 +853,10 @@ mod tests {
                 Some("resym_test::ClassWithNestedDeclarationsTest".to_string()),
                 PrimitiveReconstructionFlavor::Microsoft,
                 AccessSpecifierReconstructionFlavor::Disabled,
+                SizePrintFlavor::Comment,
                 false, // print_header
                 false, // print_dependencies
                 false, // integers_as_hexadecimal
-                true,  // print_size_info
                 true,  // print_offset_info
                 false, // print_brackets_new_line
                 false, // ignore_std_types
@@ -887,10 +888,10 @@ mod tests {
                 "".to_string(),
                 PrimitiveReconstructionFlavor::Microsoft,
                 AccessSpecifierReconstructionFlavor::Disabled,
+                SizePrintFlavor::Comment,
                 false, // print_header
                 false, // print_dependencies
                 false, // integers_as_hexadecimal
-                true,  // print_size_info
                 true,  // print_offset_info
                 false, // print_brackets_new_line
                 false, // ignore_std_types
@@ -913,10 +914,10 @@ mod tests {
                 "UserStructAddAndReplace".to_string(),
                 PrimitiveReconstructionFlavor::Microsoft,
                 AccessSpecifierReconstructionFlavor::Always,
+                SizePrintFlavor::Comment,
                 true,  // print_header
                 true,  // print_dependencies
                 false, // integers_as_hexadecimal
-                true,  // print_size_info
                 true,  // print_offset_info
                 false, // print_brackets_new_line
                 true,  // ignore_std_types
@@ -944,10 +945,10 @@ mod tests {
                 "UserStructAddAndReplace".to_string(),
                 PrimitiveReconstructionFlavor::Portable,
                 AccessSpecifierReconstructionFlavor::Disabled,
+                SizePrintFlavor::Comment,
                 false, // print_header
                 false, // print_dependencies
                 false, // integers_as_hexadecimal
-                true,  // print_size_info
                 true,  // print_offset_info
                 false, // print_brackets_new_line
                 false, // ignore_std_types

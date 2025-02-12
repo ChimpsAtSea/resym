@@ -44,6 +44,26 @@ impl FromStr for AccessSpecifierReconstructionFlavor {
     }
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum SizePrintFlavor {
+    Disabled,
+    Comment,
+    StaticAssert,
+}
+
+impl FromStr for SizePrintFlavor {
+    type Err = ResymCoreError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "disabled" | "false" => Ok(SizePrintFlavor::Disabled),
+            "comment" | "true" => Ok(SizePrintFlavor::Comment),
+            "static_assert" | "assert" | "staticassert" => Ok(SizePrintFlavor::StaticAssert),
+            _ => Err(ResymCoreError::ParsePrimitiveFlavorError(s.to_owned())),
+        }
+    }
+}
+
 pub fn include_headers_for_flavor(
     flavor: PrimitiveReconstructionFlavor,
     ignore_std_types: bool,

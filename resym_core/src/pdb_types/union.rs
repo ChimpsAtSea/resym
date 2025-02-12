@@ -7,6 +7,7 @@ use super::{
     fmt_union_fields_recursive, is_unnamed_type,
     primitive_types::AccessSpecifierReconstructionFlavor,
     primitive_types::PrimitiveReconstructionFlavor,
+    primitive_types::SizePrintFlavor,
     resolve_complete_type_index, type_bitfield_info, type_name, type_size, DataFormatConfiguration,
     Field, Method, NeededTypeSet, ReconstructibleTypeData, TypeForwarder,
 };
@@ -335,7 +336,7 @@ impl ReconstructibleTypeData for Union<'_> {
             } else {
                 " "
             },
-            if fmt_configuration.print_size_info {
+            if fmt_configuration.size_print_flavor == SizePrintFlavor::Comment {
                 format!(" /* Size={:#x} */", self.size)
             } else {
                 String::default()
@@ -469,6 +470,21 @@ impl ReconstructibleTypeData for Union<'_> {
         }
 
         writeln!(f, "}};")?;
+        if fmt_configuration.size_print_flavor == SizePrintFlavor::StaticAssert {
+            if fmt_configuration.integers_as_hexadecimal {
+                writeln!(
+                    f,
+                    "static_assert(sizeof({}) == {:#x}); // {}",
+                    self.name, self.size, self.size
+                )?;
+            } else {
+                writeln!(
+                    f,
+                    "static_assert(sizeof({}) == {}); // {:#x}",
+                    self.name, self.size, self.size
+                )?;
+            }
+        }
 
         Ok(())
     }

@@ -1,5 +1,6 @@
 use resym_core::pdb_types::AccessSpecifierReconstructionFlavor;
 use resym_core::pdb_types::PrimitiveReconstructionFlavor;
+use resym_core::pdb_types::SizePrintFlavor;
 use serde::{Deserialize, Serialize};
 
 /// This struct represents the persistent settings of the application.
@@ -11,13 +12,14 @@ pub struct ResymAppSettings {
     pub search_use_regex: bool,
     pub enable_syntax_hightlighting: bool,
     pub integers_as_hexadecimal: bool,
-    pub print_size_info: bool,
     pub print_offset_info: bool,
     pub print_brackets_new_line: bool,
     #[serde(with = "PrimitiveReconstructionFlavorDef")]
     pub primitive_types_flavor: PrimitiveReconstructionFlavor,
     #[serde(with = "AccessSpecifierReconstructionFlavorDef")]
     pub print_access_specifiers: AccessSpecifierReconstructionFlavor,
+    #[serde(with = "SizePrintFlavorDef")]
+    pub size_print_flavor: SizePrintFlavor,
     pub print_header: bool,
     pub reconstruct_dependencies: bool,
     // Ignore types in the `std` namespace (e.g., STL-generated types)
@@ -34,13 +36,13 @@ impl Default for ResymAppSettings {
             search_use_regex: false,
             enable_syntax_hightlighting: true,
             integers_as_hexadecimal: true,
-            print_size_info: true,
             print_offset_info: true,
             print_brackets_new_line: false,
             primitive_types_flavor: PrimitiveReconstructionFlavor::Portable,
+            print_access_specifiers: AccessSpecifierReconstructionFlavor::Always,
+            size_print_flavor: SizePrintFlavor::Comment,
             print_header: true,
             reconstruct_dependencies: true,
-            print_access_specifiers: AccessSpecifierReconstructionFlavor::Always,
             ignore_std_types: true,
             print_line_numbers: false,
         }
@@ -64,4 +66,13 @@ enum AccessSpecifierReconstructionFlavorDef {
     Disabled,
     Always,
     Automatic,
+}
+
+// Definition of the remote enum so that serde can its traits
+#[derive(Serialize, Deserialize)]
+#[serde(remote = "SizePrintFlavor")]
+enum SizePrintFlavorDef {
+    Disabled,
+    Comment,
+    StaticAssert,
 }

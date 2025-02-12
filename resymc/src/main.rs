@@ -4,7 +4,9 @@ mod resymc_options;
 mod syntax_highlighting;
 
 use anyhow::Result;
-use resym_core::pdb_types::{AccessSpecifierReconstructionFlavor, PrimitiveReconstructionFlavor};
+use resym_core::pdb_types::{
+    AccessSpecifierReconstructionFlavor, PrimitiveReconstructionFlavor, SizePrintFlavor,
+};
 use structopt::StructOpt;
 
 use crate::resymc_app::ResymcApp;
@@ -13,6 +15,7 @@ use crate::resymc_options::ResymcOptions;
 const DEFAULT_PRIMITIVE_FLAVOR: PrimitiveReconstructionFlavor = PrimitiveReconstructionFlavor::Msvc;
 const DEFAULT_ACCESS_SPECIFIER_FLAVOR: AccessSpecifierReconstructionFlavor =
     AccessSpecifierReconstructionFlavor::Always;
+const DEFAULT_PRINT_SIZE_FLAVOR: SizePrintFlavor = SizePrintFlavor::Comment;
 
 fn main() -> Result<()> {
     env_logger::init();
@@ -42,10 +45,10 @@ fn main() -> Result<()> {
             output_file_path,
             primitive_types_flavor,
             print_access_specifiers,
+            size_print_flavor,
             print_header,
             print_dependencies,
             integers_as_hexadecimal,
-            print_size_info,
             print_offset_info,
             print_brackets_new_line,
             ignore_std_types,
@@ -55,10 +58,10 @@ fn main() -> Result<()> {
             Some(type_name),
             primitive_types_flavor.unwrap_or(DEFAULT_PRIMITIVE_FLAVOR),
             print_access_specifiers.unwrap_or(DEFAULT_ACCESS_SPECIFIER_FLAVOR),
+            size_print_flavor.unwrap_or(DEFAULT_PRINT_SIZE_FLAVOR),
             print_header,
             print_dependencies,
             integers_as_hexadecimal,
-            print_size_info,
             print_offset_info,
             print_brackets_new_line,
             ignore_std_types,
@@ -70,9 +73,9 @@ fn main() -> Result<()> {
             output_file_path,
             primitive_types_flavor,
             print_access_specifiers,
+            size_print_flavor,
             print_header,
             integers_as_hexadecimal,
-            print_size_info,
             print_offset_info,
             print_brackets_new_line,
             ignore_std_types,
@@ -82,10 +85,10 @@ fn main() -> Result<()> {
             None,
             primitive_types_flavor.unwrap_or(DEFAULT_PRIMITIVE_FLAVOR),
             print_access_specifiers.unwrap_or(DEFAULT_ACCESS_SPECIFIER_FLAVOR),
+            size_print_flavor.unwrap_or(DEFAULT_PRINT_SIZE_FLAVOR),
             print_header,
             false,
             integers_as_hexadecimal,
-            print_size_info,
             print_offset_info,
             print_brackets_new_line,
             ignore_std_types,
@@ -99,10 +102,10 @@ fn main() -> Result<()> {
             output_file_path,
             primitive_types_flavor,
             print_access_specifiers,
+            size_print_flavor,
             print_header,
             print_dependencies,
             integers_as_hexadecimal,
-            print_size_info,
             print_offset_info,
             print_brackets_new_line,
             ignore_std_types,
@@ -113,10 +116,10 @@ fn main() -> Result<()> {
             type_name,
             primitive_types_flavor.unwrap_or(DEFAULT_PRIMITIVE_FLAVOR),
             print_access_specifiers.unwrap_or(DEFAULT_ACCESS_SPECIFIER_FLAVOR),
+            size_print_flavor.unwrap_or(DEFAULT_PRINT_SIZE_FLAVOR),
             print_header,
             print_dependencies,
             integers_as_hexadecimal,
-            print_size_info,
             print_offset_info,
             print_brackets_new_line,
             ignore_std_types,

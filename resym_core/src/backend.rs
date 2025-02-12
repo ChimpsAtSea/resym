@@ -33,7 +33,7 @@ use crate::{
     },
     pdb_types::{
         include_headers_for_flavor, AccessSpecifierReconstructionFlavor,
-        PrimitiveReconstructionFlavor,
+        PrimitiveReconstructionFlavor, SizePrintFlavor,
     },
     PKG_VERSION,
 };
@@ -59,10 +59,10 @@ pub enum BackendCommand {
         pdb_file::TypeIndex,
         PrimitiveReconstructionFlavor,       // primitive_types_flavor
         AccessSpecifierReconstructionFlavor, // print_access_specifiers,
+        SizePrintFlavor,                     // size_print_flavor
         bool,                                // print_header
         bool,                                // reconstruct_dependencies
         bool,                                // integers_as_hexadecimal
-        bool,                                // print_size_info
         bool,                                // print_offset_info
         bool,                                // print_brackets_new_line
         bool,                                // ignore_std_types
@@ -73,10 +73,10 @@ pub enum BackendCommand {
         String,
         PrimitiveReconstructionFlavor,       // primitive_types_flavor
         AccessSpecifierReconstructionFlavor, // print_access_specifiers,
+        SizePrintFlavor,                     // size_print_flavor
         bool,                                // print_header
         bool,                                // reconstruct_dependencies
         bool,                                // integers_as_hexadecimal
-        bool,                                // print_size_info
         bool,                                // print_offset_info
         bool,                                // print_brackets_new_line
         bool,                                // ignore_std_types
@@ -86,9 +86,9 @@ pub enum BackendCommand {
         PDBSlot,
         PrimitiveReconstructionFlavor,       // primitive_types_flavor
         AccessSpecifierReconstructionFlavor, // print_access_specifiers,
+        SizePrintFlavor,                     // size_print_flavor
         bool,                                // print_header
         bool,                                // integers_as_hexadecimal
-        bool,                                // print_size_info
         bool,                                // print_offset_info
         bool,                                // print_brackets_new_line
         bool,                                // ignore_std_types
@@ -145,10 +145,10 @@ pub enum BackendCommand {
         String,                              // type_name
         PrimitiveReconstructionFlavor,       // primitives_flavor
         AccessSpecifierReconstructionFlavor, // print_access_specifiers,
+        SizePrintFlavor,                     // size_print_flavor
         bool,                                // print_header
         bool,                                // reconstruct_dependencies
         bool,                                // integers_as_hexadecimal
-        bool,                                // print_size_info
         bool,                                // print_offset_info
         bool,                                // print_brackets_new_line
         bool,                                // ignore_std_types
@@ -391,10 +391,10 @@ fn worker_thread_routine(
                 type_index,
                 primitives_flavor,
                 print_access_specifiers,
+                size_print_flavor,
                 print_header,
                 reconstruct_dependencies,
                 integers_as_hexadecimal,
-                print_size_info,
                 print_offset_info,
                 print_brackets_new_line,
                 ignore_std_types,
@@ -405,10 +405,10 @@ fn worker_thread_routine(
                         type_index,
                         primitives_flavor,
                         print_access_specifiers,
+                        size_print_flavor,
                         print_header,
                         reconstruct_dependencies,
                         integers_as_hexadecimal,
-                        print_size_info,
                         print_offset_info,
                         print_brackets_new_line,
                         ignore_std_types,
@@ -424,10 +424,10 @@ fn worker_thread_routine(
                 type_name,
                 primitives_flavor,
                 print_access_specifiers,
+                size_print_flavor,
                 print_header,
                 reconstruct_dependencies,
                 integers_as_hexadecimal,
-                print_size_info,
                 print_offset_info,
                 print_brackets_new_line,
                 ignore_std_types,
@@ -438,10 +438,10 @@ fn worker_thread_routine(
                         &type_name,
                         primitives_flavor,
                         print_access_specifiers,
+                        size_print_flavor,
                         print_header,
                         reconstruct_dependencies,
                         integers_as_hexadecimal,
-                        print_size_info,
                         print_offset_info,
                         print_brackets_new_line,
                         ignore_std_types,
@@ -456,9 +456,9 @@ fn worker_thread_routine(
                 pdb_slot,
                 primitives_flavor,
                 print_access_specifiers,
+                size_print_flavor,
                 print_header,
                 integers_as_hexadecimal,
-                print_size_info,
                 print_offset_info,
                 print_brackets_new_line,
                 ignore_std_types,
@@ -468,9 +468,9 @@ fn worker_thread_routine(
                         pdb_file,
                         primitives_flavor,
                         print_access_specifiers,
+                        size_print_flavor,
                         print_header,
                         integers_as_hexadecimal,
-                        print_size_info,
                         print_offset_info,
                         print_brackets_new_line,
                         ignore_std_types,
@@ -722,10 +722,10 @@ fn worker_thread_routine(
                 type_name,
                 primitives_flavor,
                 print_access_specifiers,
+                size_print_flavor,
                 print_header,
                 reconstruct_dependencies,
                 integers_as_hexadecimal,
-                print_size_info,
                 print_offset_info,
                 print_brackets_new_line,
                 ignore_std_types,
@@ -738,10 +738,10 @@ fn worker_thread_routine(
                             &type_name,
                             primitives_flavor,
                             print_access_specifiers,
+                            size_print_flavor,
                             print_header,
                             reconstruct_dependencies,
                             integers_as_hexadecimal,
-                            print_size_info,
                             print_offset_info,
                             print_brackets_new_line,
                             ignore_std_types,
@@ -794,10 +794,10 @@ fn reconstruct_type_by_index_command<'p, T>(
     type_index: pdb_file::TypeIndex,
     primitives_flavor: PrimitiveReconstructionFlavor,
     print_access_specifiers: AccessSpecifierReconstructionFlavor,
+    size_print_flavor: SizePrintFlavor,
     print_header: bool,
     reconstruct_dependencies: bool,
     integers_as_hexadecimal: bool,
-    print_size_info: bool,
     print_offset_info: bool,
     print_brackets_new_line: bool,
     ignore_std_types: bool,
@@ -809,9 +809,9 @@ where
         type_index,
         primitives_flavor,
         print_access_specifiers,
+        size_print_flavor,
         reconstruct_dependencies,
         integers_as_hexadecimal,
-        print_size_info,
         print_offset_info,
         print_brackets_new_line,
         ignore_std_types,
@@ -829,10 +829,10 @@ fn reconstruct_type_by_name_command<'p, T>(
     type_name: &str,
     primitives_flavor: PrimitiveReconstructionFlavor,
     print_access_specifiers: AccessSpecifierReconstructionFlavor,
+    size_print_flavor: SizePrintFlavor,
     print_header: bool,
     reconstruct_dependencies: bool,
     integers_as_hexadecimal: bool,
-    print_size_info: bool,
     print_offset_info: bool,
     print_brackets_new_line: bool,
     ignore_std_types: bool,
@@ -844,9 +844,9 @@ where
         type_name,
         primitives_flavor,
         print_access_specifiers,
+        size_print_flavor,
         reconstruct_dependencies,
         integers_as_hexadecimal,
-        print_size_info,
         print_offset_info,
         print_brackets_new_line,
         ignore_std_types,
@@ -863,9 +863,9 @@ fn reconstruct_all_types_command<'p, T>(
     pdb_file: &PdbFile<'p, T>,
     primitives_flavor: PrimitiveReconstructionFlavor,
     print_access_specifiers: AccessSpecifierReconstructionFlavor,
+    size_print_flavor: SizePrintFlavor,
     print_header: bool,
     integers_as_hexadecimal: bool,
-    print_size_info: bool,
     print_offset_info: bool,
     print_brackets_new_line: bool,
     ignore_std_types: bool,
@@ -876,8 +876,8 @@ where
     let data = pdb_file.reconstruct_all_types(
         primitives_flavor,
         print_access_specifiers,
+        size_print_flavor,
         integers_as_hexadecimal,
-        print_size_info,
         print_offset_info,
         print_brackets_new_line,
         ignore_std_types,

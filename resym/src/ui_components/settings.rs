@@ -1,5 +1,7 @@
 use eframe::egui;
-use resym_core::pdb_types::{AccessSpecifierReconstructionFlavor, PrimitiveReconstructionFlavor};
+use resym_core::pdb_types::{
+    AccessSpecifierReconstructionFlavor, PrimitiveReconstructionFlavor, SizePrintFlavor,
+};
 
 use crate::settings::ResymAppSettings;
 
@@ -111,10 +113,29 @@ impl SettingsComponent {
                             &mut self.app_settings.print_line_numbers,
                             "Print line numbers",
                         );
-                        ui.checkbox(
-                            &mut self.app_settings.print_size_info,
-                            "Print size comments",
+                        ui.label(
+                            egui::RichText::new("Print size comments")
+                                .color(ui.style().visuals.widgets.inactive.text_color()),
                         );
+                        egui::ComboBox::from_id_salt("size_print_flavor")
+                            .selected_text(format!("{:?}", self.app_settings.size_print_flavor))
+                            .show_ui(ui, |ui| {
+                                ui.selectable_value(
+                                    &mut self.app_settings.size_print_flavor,
+                                    SizePrintFlavor::Comment,
+                                    "Comment",
+                                );
+                                ui.selectable_value(
+                                    &mut self.app_settings.size_print_flavor,
+                                    SizePrintFlavor::StaticAssert,
+                                    "Static Assert",
+                                );
+                                ui.selectable_value(
+                                    &mut self.app_settings.size_print_flavor,
+                                    SizePrintFlavor::Disabled,
+                                    "Disabled",
+                                );
+                            });
                         ui.checkbox(
                             &mut self.app_settings.print_offset_info,
                             "Print offset comments",
@@ -174,13 +195,13 @@ impl SettingsComponent {
                                 );
                                 ui.selectable_value(
                                     &mut self.app_settings.print_access_specifiers,
-                                    AccessSpecifierReconstructionFlavor::Disabled,
-                                    "Disabled",
+                                    AccessSpecifierReconstructionFlavor::Always,
+                                    "Always",
                                 );
                                 ui.selectable_value(
                                     &mut self.app_settings.print_access_specifiers,
-                                    AccessSpecifierReconstructionFlavor::Always,
-                                    "Always",
+                                    AccessSpecifierReconstructionFlavor::Disabled,
+                                    "Disabled",
                                 );
                             });
                         ui.checkbox(

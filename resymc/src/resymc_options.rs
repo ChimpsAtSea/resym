@@ -1,6 +1,8 @@
 use std::path::PathBuf;
 
-use resym_core::pdb_types::{AccessSpecifierReconstructionFlavor, PrimitiveReconstructionFlavor};
+use resym_core::pdb_types::{
+    AccessSpecifierReconstructionFlavor, PrimitiveReconstructionFlavor, SizePrintFlavor,
+};
 use structopt::StructOpt;
 
 const PKG_NAME: &str = env!("CARGO_PKG_NAME");
@@ -54,7 +56,7 @@ pub enum ResymcOptions {
         integers_as_hexadecimal: bool,
         /// Print Size Info
         #[structopt(short = "psi", long)]
-        print_size_info: bool,
+        size_print_flavor: Option<SizePrintFlavor>,
         /// Print Offset Info
         #[structopt(short = "poi", long)]
         print_offset_info: bool,
@@ -88,7 +90,7 @@ pub enum ResymcOptions {
         integers_as_hexadecimal: bool,
         /// Print Size Info
         #[structopt(short = "psi", long)]
-        print_size_info: bool,
+        size_print_flavor: Option<SizePrintFlavor>,
         /// Print Offset Info
         #[structopt(short = "poi", long)]
         print_offset_info: bool,
@@ -129,7 +131,7 @@ pub enum ResymcOptions {
         integers_as_hexadecimal: bool,
         /// Print Size Info
         #[structopt(short = "psi", long)]
-        print_size_info: bool,
+        size_print_flavor: Option<SizePrintFlavor>,
         /// Print Offset Info
         #[structopt(short = "poi", long)]
         print_offset_info: bool,

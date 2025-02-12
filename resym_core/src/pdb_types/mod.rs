@@ -20,6 +20,7 @@ use union::Union;
 
 pub use primitive_types::{
     include_headers_for_flavor, AccessSpecifierReconstructionFlavor, PrimitiveReconstructionFlavor,
+    SizePrintFlavor,
 };
 
 use self::forward_declaration::{ForwardDeclaration, ForwardDeclarationKind};
@@ -1178,8 +1179,8 @@ fn find_unnamed_structs_in_unions(fields: &[Field]) -> Vec<Range<usize>> {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DataFormatConfiguration {
     pub print_access_specifiers: AccessSpecifierReconstructionFlavor,
+    pub size_print_flavor: SizePrintFlavor,
     pub integers_as_hexadecimal: bool,
-    pub print_size_info: bool,
     pub print_offset_info: bool,
     pub print_brackets_new_line: bool,
 }
@@ -1188,8 +1189,8 @@ impl Default for DataFormatConfiguration {
     fn default() -> Self {
         Self {
             print_access_specifiers: AccessSpecifierReconstructionFlavor::Always,
+            size_print_flavor: SizePrintFlavor::Comment,
             integers_as_hexadecimal: true,
-            print_size_info: true,
             print_offset_info: true,
             print_brackets_new_line: false,
         }

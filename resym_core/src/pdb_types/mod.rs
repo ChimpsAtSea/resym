@@ -100,11 +100,26 @@ pub fn type_name(
                 needed_types.extend(temporary_needed_types);
             }
 
-            if data.attributes.is_reference() {
-                (format!("{type_left}&"), type_right)
+            let mut suffix = String::new();
+            if data.attributes.is_mocom() {
+                // how to tell the difference between ^ and %
+                suffix.push_str("^ ");
+            } else if data.attributes.pointer_mode() == pdb::PointerMode::RValueReference {
+                suffix.push_str("&& ");
+            } else if data.attributes.pointer_mode() == pdb::PointerMode::LValueReference {
+                suffix.push_str("& ");
             } else {
-                (format!("{type_left}*"), type_right)
+                suffix.push_str("* ");
             }
+            if data.attributes.is_unaligned() {
+                // how to tell the difference between ^ and %
+                suffix.push_str("__unaligned ");
+            }
+            if data.attributes.is_restrict() {
+                // how to tell the difference between ^ and %
+                suffix.push_str("__restrict ");
+            }
+            (format!("{}{}", type_left, suffix.trim_end()), type_right)
         }
 
         pdb::TypeData::Modifier(data) => {
@@ -119,14 +134,17 @@ pub fn type_name(
                 needed_types,
             )?;
 
+            let mut prefix = String::new();
             if data.constant {
-                (format!("const {type_left}"), type_right)
-            } else if data.volatile {
-                (format!("volatile {type_left}"), type_right)
-            } else {
-                // ?
-                (type_left, type_right)
+                prefix.push_str("const ");
             }
+            if data.volatile {
+                prefix.push_str("volatile ");
+            }
+            if data.unaligned {
+                prefix.push_str("__unaligned ");
+            }
+            (format!("{}{}", prefix, type_left), type_right)
         }
 
         pdb::TypeData::Array(data) => {

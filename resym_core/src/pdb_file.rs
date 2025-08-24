@@ -65,7 +65,7 @@ pub type ModuleIndex = usize;
 pub type ModuleInfo = (String, ModuleIndex);
 pub type ModuleList = Vec<ModuleInfo>;
 
-const GLOBAL_MODULE_INDEX: usize = usize::MAX;
+pub const GLOBAL_MODULE_INDEX: usize = usize::MAX;
 
 /// Wrapper for different buffer types processed by `resym`
 #[derive(Debug)]
@@ -573,6 +573,8 @@ where
                     return Ok(self
                         .reconstruct_symbol(
                             &type_finder,
+                            None,
+                            symbol_index,
                             &symbol,
                             primitives_flavor,
                             print_access_specifiers,
@@ -590,6 +592,8 @@ where
                         return Ok(self
                             .reconstruct_symbol(
                                 &type_finder,
+                                Some(&module_info),
+                                symbol_index,
                                 &symbol,
                                 primitives_flavor,
                                 print_access_specifiers,
@@ -630,6 +634,8 @@ where
                         return Ok(self
                             .reconstruct_symbol(
                                 &type_finder,
+                                None,
+                                (GLOBAL_MODULE_INDEX, symbol.index().0),
                                 &symbol,
                                 primitives_flavor,
                                 print_access_specifiers,
@@ -644,6 +650,7 @@ where
         {
             let mut pdb = self.pdb.write().expect("lock shouldn't be poisoned");
             let mut modules = self.debug_information.modules()?;
+            let mut module_id = 0;
             while let Some(module) = modules.next()? {
                 if let Some(module_info) = pdb.module_info(&module)? {
                     let mut module_symbols = module_info.symbols()?;
@@ -654,6 +661,8 @@ where
                                     return Ok(self
                                         .reconstruct_symbol(
                                             &type_finder,
+                                            Some(&module_info),
+                                            (module_id, symbol.index().0),
                                             &symbol,
                                             primitives_flavor,
                                             print_access_specifiers,
@@ -664,6 +673,7 @@ where
                         }
                     }
                 }
+                module_id += 1;
             }
         }
 
@@ -696,6 +706,8 @@ where
                 if get_symbol_name(&symbol_data).is_some() {
                     if let Some(reconstructed_symbol) = self.reconstruct_symbol(
                         &type_finder,
+                        None,
+                        (GLOBAL_MODULE_INDEX, symbol.index().0),
                         &symbol,
                         primitives_flavor,
                         print_access_specifiers,
@@ -710,6 +722,7 @@ where
         {
             let mut pdb = self.pdb.write().expect("lock shouldn't be poisoned");
             let mut modules = self.debug_information.modules()?;
+            let mut module_id = 0;
             while let Some(module) = modules.next()? {
                 if let Some(module_info) = pdb.module_info(&module)? {
                     let mut module_symbols = module_info.symbols()?;
@@ -718,6 +731,8 @@ where
                             if get_symbol_name(&symbol_data).is_some() {
                                 if let Some(reconstructed_symbol) = self.reconstruct_symbol(
                                     &type_finder,
+                                    Some(&module_info),
+                                    (module_id, symbol.index().0),
                                     &symbol,
                                     primitives_flavor,
                                     print_access_specifiers,
@@ -732,6 +747,7 @@ where
                         }
                     }
                 }
+                module_id += 1;
             }
         }
 
@@ -797,6 +813,8 @@ where
         module_info.symbols()?.for_each(|symbol| {
             let reconstructed_symbol = self.reconstruct_symbol(
                 &type_finder,
+                Some(&module_info),
+                (module_index, symbol.index().0),
                 &symbol,
                 primitives_flavor,
                 print_access_specifiers,
@@ -1116,6 +1134,8 @@ where
     fn reconstruct_symbol(
         &self,
         type_finder: &pdb::ItemFinder<'_, pdb::TypeIndex>,
+        module_info: Option<&pdb::ModuleInfo>,
+        symbol_index: SymbolIndex,
         symbol: &pdb::Symbol<'_>,
         primitives_flavor: PrimitiveReconstructionFlavor,
         print_access_specifiers: AccessSpecifierReconstructionFlavor,
@@ -1146,37 +1166,159 @@ where
 
             // Functions and methods
             pdb::SymbolData::Procedure(procedure) => {
+                // TODO: fix arg alignment issue
+                // ex: AdtpBuildSecurityDescriptorChangeString
+
+                // List parameter names
+                let symbol_iter = if symbol_index.0 == GLOBAL_MODULE_INDEX {
+                    Some(self.global_symbols.iter_at(symbol.index()))
+                } else if let Some(module_info) = module_info {
+                    Some(module_info.symbols_at(symbol_index.1.into()).unwrap())
+                } else {
+                    None
+                };
+
+                let mut args = vec![];
+                let mut register_variable_names = vec![];
+                let mut register_relative_names = vec![];
+
+                if let Some(mut symbol_iter) = symbol_iter {
+                    while let Some(nested_symbol) = symbol_iter.next().unwrap_or_default() {
+                        if nested_symbol.index() == procedure.end {
+                            break;
+                        }
+
+                        if let Ok(sym_data) = nested_symbol.parse() {
+                            match sym_data {
+                                pdb::SymbolData::Local(data) => {
+                                    if data.flags.isparam {
+                                        args.push(
+                                            sym_data
+                                                .name()
+                                                .unwrap_or_default()
+                                                .to_string()
+                                                .to_string(),
+                                        );
+                                    }
+                                }
+
+                                pdb::SymbolData::RegisterVariable(data) => {
+                                    register_variable_names.push(data.name.to_string().to_string());
+                                }
+
+                                pdb::SymbolData::RegisterRelative(data) => {
+                                    register_relative_names.push(data.name.to_string().to_string());
+                                }
+
+                                _ => {}
+                            }
+                        }
+                    }
+                }
+
+                let mut args = if args.is_empty() {
+                    if register_variable_names.is_empty() {
+                        register_relative_names
+                    } else {
+                        register_variable_names
+                    }
+                } else {
+                    args
+                };
+
+                if !args.is_empty() && args[0] == "this" {
+                    args.remove(0);
+                }
+
                 let symbol_rva = symbol_rva(&procedure.offset, &self.sections)
                     .map(|offset| format!("RVA=0x{:x} ", offset))
                     .unwrap_or_default();
-                if let Ok(type_name) = type_name(
+
+                let Some(mut type_name) = type_name(
                     type_finder,
                     &self.forwarder_to_complete_type,
                     procedure.type_index,
                     &primitives_flavor,
                     &mut needed_types,
-                ) {
-                    let static_prefix = if procedure.global { "" } else { "static " };
-                    if type_name.0 == "..." {
-                        // No type
-                        Some(format!(
-                            "{}void {}(); // {}CodeSize=0x{:x} (missing type information)",
-                            static_prefix, procedure.name, symbol_rva, procedure.len,
-                        ))
-                    } else {
-                        Some(format!(
-                            "{}{}{}{}; // {}CodeSize=0x{:x}",
-                            static_prefix,
-                            type_name.0,
-                            procedure.name,
-                            type_name.1,
-                            symbol_rva,
-                            procedure.len,
-                        ))
-                    }
-                } else {
-                    None
+                )
+                .ok() else {
+                    return None;
+                };
+
+                if type_name.0.contains(" (") {
+                    type_name.0 = type_name.0.replace(" (", " ");
                 }
+
+                if type_name.1.starts_with(")") {
+                    type_name.1 = type_name.1[1..].to_string();
+                }
+
+                let static_prefix = if procedure.global { "" } else { "static " };
+                if type_name.0 == "..." {
+                    // No type
+                    return Some(format!(
+                        "{}void {}(); // {}CodeSize=0x{:x} (missing type information)",
+                        static_prefix, procedure.name, symbol_rva, procedure.len,
+                    ));
+                }
+
+                // FIXME(ergrelet): this is a dirty hack... Can we do better?
+                let arg_string = if args.is_empty() {
+                    // Only types, no argument names
+                    type_name.1.clone()
+                } else {
+                    // Inject argument names
+                    //
+                    // Find beginning and end of the argument list
+                    let start_offset = type_name
+                        .1
+                        .find('(')
+                        .expect("type_name.1 should contain '('");
+                    let end_offset = type_name
+                        .1
+                        .rfind(')')
+                        .expect("type_name.1 should contain ')'");
+
+                    // Split at commas
+                    let parts = type_name.1[start_offset..end_offset]
+                        .split(',')
+                        .collect::<Vec<_>>();
+                    let args = args.iter().take(parts.len()).collect::<Vec<_>>();
+
+                    // Rejoin while adding argument names
+                    let arg_list = parts
+                        .iter()
+                        .enumerate()
+                        .map(|(i, p)| {
+                            if p.ends_with('(') {
+                                p.to_string()
+                            } else if let Some(s) = args.get(i) {
+                                format!("{} {}", p, s)
+                            } else {
+                                p.to_string()
+                            }
+                        })
+                        .collect::<Vec<_>>()
+                        .join(",");
+
+                    // Reconstruct the whole string
+                    format!(
+                        "{}{}{}",
+                        &type_name.1[..start_offset],
+                        arg_list,
+                        &type_name.1[end_offset..]
+                    )
+                };
+
+                Some(format!(
+                    "{}{}{}{}; // {}CodeSize=0x{:x}",
+                    static_prefix,
+                    type_name.0,
+                    procedure.name,
+                    arg_string,
+                    symbol_rva,
+                    procedure.len,
+                ))
             }
 
             // Global variables

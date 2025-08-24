@@ -247,8 +247,8 @@ pub fn type_name(
             // Resolve the complete type's index, if present in the PDB
             let complete_return_type_index =
                 resolve_complete_type_index(type_forwarder, data.return_type);
-            let complete_class_type_index =
-                resolve_complete_type_index(type_forwarder, data.class_type);
+            // let complete_class_type_index =
+            //     resolve_complete_type_index(type_forwarder, data.class_type);
             // // TODO: Parse and display attributes
             let (ret_type_left, ret_type_right) = type_name(
                 type_finder,
@@ -257,13 +257,13 @@ pub fn type_name(
                 primitive_flavor,
                 needed_types,
             )?;
-            let (class_type_left, _) = type_name(
-                type_finder,
-                type_forwarder,
-                complete_class_type_index,
-                primitive_flavor,
-                needed_types,
-            )?;
+            // let (class_type_left, _) = type_name(
+            //     type_finder,
+            //     type_forwarder,
+            //     complete_class_type_index,
+            //     primitive_flavor,
+            //     needed_types,
+            // )?;
             let arg_list = argument_list(
                 type_finder,
                 type_forwarder,
@@ -273,7 +273,7 @@ pub fn type_name(
             )?;
 
             (
-                format!("{ret_type_left}{ret_type_right} ({class_type_left}::"),
+                format!("{ret_type_left}{ret_type_right} ({}", /*format!("{}::", class_type_left)*/ String::new()),
                 format!(
                     ")({})",
                     arg_list

@@ -1088,9 +1088,9 @@ mod tests {
                 "using namespace std;\n",
                 "using PUWSTR_C = const __unaligned wchar_t*;\n",
                 "using TP_CALLBACK_ENVIRON_V3 = _TP_CALLBACK_ENVIRON_V3;\n",
-                "uint64_t* (__local_stdio_scanf_options)(); // RVA=0x14670 CodeSize=0x8\n",
+                "uint64_t* __local_stdio_scanf_options(); // RVA=0x14670 CodeSize=0x8\n",
                 "static uint64_t _OptionsStorage; // RVA=0x1eb28 \n",
-                "void (__scrt_initialize_default_local_stdio_options)(); // RVA=0x14680 CodeSize=0x45\n",
+                "void __scrt_initialize_default_local_stdio_options(); // RVA=0x14680 CodeSize=0x45\n",
             )
         );
     }
@@ -1170,9 +1170,9 @@ mod tests {
                 " using namespace std;\n",
                 " using PUWSTR_C = const __unaligned wchar_t*;\n",
                 " using TP_CALLBACK_ENVIRON_V3 = _TP_CALLBACK_ENVIRON_V3;\n",
-                " uint64_t* (__local_stdio_scanf_options)(); // RVA=0x13c30 CodeSize=0x8\n",
+                " uint64_t* __local_stdio_scanf_options(); // RVA=0x13c30 CodeSize=0x8\n",
                 " static uint64_t _OptionsStorage; // RVA=0x1c898 \n",
-                " void (__scrt_initialize_default_local_stdio_options)(); // RVA=0x13c40 CodeSize=0x45\n",
+                " void __scrt_initialize_default_local_stdio_options(); // RVA=0x13c40 CodeSize=0x45\n",
             )
         );
     }

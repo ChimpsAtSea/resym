@@ -273,7 +273,10 @@ pub fn type_name(
             )?;
 
             (
-                format!("{ret_type_left}{ret_type_right} ({}", /*format!("{}::", class_type_left)*/ String::new()),
+                format!(
+                    "{ret_type_left}{ret_type_right} ({}",
+                    /*format!("{}::", class_type_left)*/ String::new()
+                ),
                 format!(
                     ")({})",
                     arg_list

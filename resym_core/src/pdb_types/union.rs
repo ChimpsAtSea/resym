@@ -1,4 +1,4 @@
-use std::{char::from_digit, fmt};
+use std::fmt;
 
 use super::{
     class::Class,

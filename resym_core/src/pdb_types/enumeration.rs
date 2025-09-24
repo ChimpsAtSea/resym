@@ -85,7 +85,9 @@ impl ReconstructibleTypeData for Enum<'_> {
                         if fmt_configuration.integers_as_hexadecimal {
                             format!("0x{v:02x}")
                         } else {
-                            format!("{v}")
+                            // U8 is actually treated as a speical singed 8bit integer for enums
+                            let s = unsafe { *((&raw const v) as *const i8) };
+                            format!("{s}")
                         }
                     }
                     pdb::Variant::U16(v) => {
